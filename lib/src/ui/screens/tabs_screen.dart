@@ -8,7 +8,7 @@ import 'package:meals/src/ui/screens/categories_screen.dart';
 
 class TabsScreen extends StatefulWidget {
   final List<Meal> favoriteMeals;
-  List<Category> categories;
+  final List<Category> categories;
 
 
   TabsScreen(this.favoriteMeals, this.categories);

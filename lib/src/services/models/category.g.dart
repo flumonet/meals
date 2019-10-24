@@ -10,7 +10,7 @@ Category _$CategoryFromJson(Map<String, dynamic> json) {
   return Category(
       id: json['id'] as String,
       title: json['title'] as String,
-      color: json['color']);
+      color: json['color'] as int);
 }
 
 Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{

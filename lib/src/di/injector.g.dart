@@ -11,7 +11,7 @@ class _$Injector extends Injector {
     final Container container = Container();
     container.registerFactory((c) => Client(), name: 'client');
     container.registerFactory<CategoriesService, CategoriesApiService>(
-        (c) => CategoriesApiService(c<Client>('client')));
+        (c) => CategoriesApiService());
     container.registerFactory((c) => CategoryBloc(c<CategoriesService>()));
   }
 }
