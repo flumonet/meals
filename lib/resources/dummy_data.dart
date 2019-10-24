@@ -1,58 +1,72 @@
 import 'package:flutter/material.dart';
+import 'package:meals/src/services/models/cat.dart';
+import 'package:meals/src/services/models/meal.dart';
+import 'package:meals/src/services/models/category.dart';
 
-import './models/category.dart';
-import './models/meal.dart';
+List<Cat> dummyCat = [
+  Cat(
+    id: 'c1',
+    title: 'Italian',
+    color: Colors.purple.value,
+  ),
+  Cat(
+    id: 'c2',
+    title: 'Quick & Easy',
+    color: Colors.red.value,
+  ),
+ ];
 
-const DUMMY_CATEGORIES = const [
+
+List<Category> dummyCategories = [
   Category(
     id: 'c1',
     title: 'Italian',
-    color: Colors.purple,
+    color: Colors.purple.value,
   ),
   Category(
     id: 'c2',
     title: 'Quick & Easy',
-    color: Colors.red,
+    color: Colors.red.value,
   ),
   Category(
     id: 'c3',
     title: 'Hamburgers',
-    color: Colors.orange,
+    color: Colors.orange.value,
   ),
   Category(
     id: 'c4',
     title: 'German',
-    color: Colors.amber,
+    color: Colors.amber.value,
   ),
   Category(
     id: 'c5',
     title: 'Light & Lovely',
-    color: Colors.blue,
+    color: Colors.blue.value,
   ),
   Category(
     id: 'c6',
     title: 'Exotic',
-    color: Colors.green,
+    color: Colors.green.value,
   ),
   Category(
     id: 'c7',
     title: 'Breakfast',
-    color: Colors.lightBlue,
+    color: Colors.lightBlue.value,
   ),
   Category(
     id: 'c8',
     title: 'Asian',
-    color: Colors.lightGreen,
+    color: Colors.lightGreen.value,
   ),
   Category(
     id: 'c9',
     title: 'French',
-    color: Colors.pink,
+    color: Colors.pink.value,
   ),
   Category(
     id: 'c10',
     title: 'Summer',
-    color: Colors.teal,
+    color: Colors.teal.value,
   ),
 ];
 
