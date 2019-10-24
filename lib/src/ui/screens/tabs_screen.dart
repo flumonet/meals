@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:meals/src/modules/local_io/local_storage.dart';
+import 'package:meals/src/services/models/category.dart';
 import 'package:meals/src/ui/screens/favorites_sceen.dart';
 import 'package:meals/src/ui/widgets/main_drawer.dart';
 import 'package:meals/src/services/models/meal.dart';
@@ -6,9 +8,10 @@ import 'package:meals/src/ui/screens/categories_screen.dart';
 
 class TabsScreen extends StatefulWidget {
   final List<Meal> favoriteMeals;
+  List<Category> categories;
 
 
-  TabsScreen(this.favoriteMeals);
+  TabsScreen(this.favoriteMeals, this.categories);
 
   @override
   _TabsScreenState createState() => _TabsScreenState();
@@ -22,7 +25,7 @@ class _TabsScreenState extends State<TabsScreen> {
   @override
   void initState() {
     _pages = [
-    {'page': CategoriesScreen(), 'title': 'Categories'},
+    {'page': CategoriesScreen(widget.categories), 'title': 'Categories'},
     {'page': FavoritesScreen(widget.favoriteMeals), 'title': 'Your Favorites'},
     ];
     super.initState();
@@ -36,6 +39,13 @@ class _TabsScreenState extends State<TabsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final categoryId = ModalRoute.of(context).settings.arguments as String;
+    if (categoryId != null) {
+      widget.categories.removeWhere((e) {
+        return e.id == categoryId;
+      });
+      LocalStorage().writeContent(widget.categories);
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -43,6 +53,7 @@ class _TabsScreenState extends State<TabsScreen> {
         ),
       ),
       drawer: MainDrawer(),
+
       body: _pages[_selectedPageIndex]['page'],
       bottomNavigationBar: BottomNavigationBar(
         onTap: _selectPage,

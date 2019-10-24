@@ -29,8 +29,6 @@ Future _setPortraitMode() async {
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.landscapeRight,
-    DeviceOrientation.portraitDown,
-    DeviceOrientation.landscapeLeft,
   ]);
 }
 

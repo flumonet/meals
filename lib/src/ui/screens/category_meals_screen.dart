@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:meals/resources/dummy_data.dart';
 import 'package:meals/src/services/models/meal.dart';
 import 'package:meals/src/ui/widgets/meal_item.dart';
 
@@ -9,7 +8,6 @@ class CategoryMealsScreen extends StatefulWidget {
 
   final List<Meal> availableMeals;
 
-
   CategoryMealsScreen(this.availableMeals);
 
   @override
@@ -17,18 +15,18 @@ class CategoryMealsScreen extends StatefulWidget {
 }
 
 class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
-
   String categoryTitle;
   List<Meal> displayedMeals;
   var _loadedInitData = false;
+  var categoryId = '';
 
   @override
   void didChangeDependencies() {
     if (!_loadedInitData) {
       final routeArgs =
-      ModalRoute.of(context).settings.arguments as Map<String, String>;
+          ModalRoute.of(context).settings.arguments as Map<String, String>;
       categoryTitle = routeArgs['title'];
-      final categoryId = routeArgs['id'];
+      categoryId = routeArgs['id'];
       displayedMeals = widget.availableMeals.where((meal) {
         return meal.categories.contains(categoryId);
       }).toList();
@@ -43,11 +41,27 @@ class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
     });
   }
 
+  void selectCategory(BuildContext context) {
+    Navigator.of(context).pushNamed(
+      '/',
+      arguments: categoryId,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(categoryTitle),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.delete,
+            ),
+            padding: EdgeInsets.only(right: 30),
+            onPressed: () => selectCategory(context),
+          ),
+        ],
       ),
       body: ListView.builder(
         itemBuilder: (ctx, index) {
@@ -63,13 +77,6 @@ class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
         },
         itemCount: displayedMeals.length,
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.delete),
-        onPressed: () {
-          // Navigator.of(context).pop(mealId);
-        },
-      ),
-
     );
   }
 }

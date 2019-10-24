@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:meals/src/modules/local_io/local_storage.dart';
 import 'package:meals/src/services/api/api_timeout.dart';
 import 'package:meals/src/services/api/categories_service.dart';
 import 'package:meals/src/services/models/category.dart';
@@ -15,13 +16,9 @@ class CategoriesApiService implements CategoriesService {
 
   @override
   Future<List<Category>> fetchCategories() async {
-    final response = await client
-        .get(request)
-        .timeout(longDuration);
-    if (response.statusCode == HttpStatus.ok) {
-      //print(json.decode(response.body)['data'].toString());
-      return CategoriesResponse.fromJson(json.decode(response.body)['data'])
-          .categories;
+    final categories = await LocalStorage().readContent();
+    if (categories != null) {
+      return categories;
     } else {
       throw Exception('Problem loading data');
     }
