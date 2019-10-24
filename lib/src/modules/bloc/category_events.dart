@@ -9,6 +9,6 @@ class FetchCategoriesEvent extends CategoryEvents {
   FetchCategoriesEvent();
 
   @override
-  String toString() => 'FetchPokemonsEvent';
+  String toString() => 'FetchCategotiesEvent';
 }
 

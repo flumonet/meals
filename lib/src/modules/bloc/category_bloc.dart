@@ -23,8 +23,8 @@ class CategoryBloc extends Bloc<CategoryEvents, CategoryState> {
   Stream<CategoryState> _getCategories() async* {
     yield CategoryLoadingState();
     try {
-      var pokes = await _categoriesService.fetchCategories();
-      yield CategoryLoadedState(pokes);
+      var categories = await _categoriesService.fetchCategories();
+      yield CategoryLoadedState(categories);
     } catch (e) {
       yield CategoryErrorState(e);
     }

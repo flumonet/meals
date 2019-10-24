@@ -1,10 +1,16 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meals/src/modules/bloc/category_bloc.dart';
+import 'package:kiwi/kiwi.dart' as kiwi;
+import 'package:meals/src/modules/bloc/category_events.dart';
+import 'package:meals/src/modules/bloc/category_states.dart';
 
-import 'package:meals/src/modules/local_storage.dart';
 import 'package:meals/resources/dummy_data.dart';
 import 'package:meals/src/services/models/category.dart';
 import 'package:meals/src/services/models/meal.dart';
+import 'package:meals/src/ui/error/error_screen.dart';
+import 'package:meals/src/ui/widgets/loading_indicator.dart';
 import 'package:meals/src/ui/screens/categories_screen.dart';
 import 'package:meals/src/ui/screens/category_meals_screen.dart';
 import 'package:meals/src/ui/screens/filters_screen.dart';
@@ -12,11 +18,26 @@ import 'package:meals/src/ui/screens/meal_detail_screen.dart';
 import 'package:meals/src/ui/screens/tabs_screen.dart';
 
 class MealsApp extends StatefulWidget {
+  static const routeName = '/meals_app';
+
   @override
   _MealsAppState createState() => _MealsAppState();
 }
 
 class _MealsAppState extends State<MealsApp> {
+
+  CategoryBloc _categoryBloc;
+  List<Meal> _availableMeals = DUMMY_MEALS;
+  List<Meal> _favoritedMeals = [];
+  List<Category> categories = [];
+
+  @override
+  void initState() {
+    _categoryBloc = kiwi.Container().resolve<CategoryBloc>()
+      ..dispatch(FetchCategoriesEvent());
+    super.initState();
+  }
+
   Map<String, bool> _filters = {
     'gluten': false,
     'lactose': false,
@@ -24,14 +45,9 @@ class _MealsAppState extends State<MealsApp> {
     'vegetarian': false,
   };
 
-  List<Meal> _availableMeals = DUMMY_MEALS;
-  List<Meal> _favoritedMeals = [];
-  List<Category> categories = [];
-
   void _setFilters(Map<String, bool> filterData) {
     setState(() {
       _filters = filterData;
-
       _availableMeals = DUMMY_MEALS.where((meal) {
         if (_filters['gluten'] && !meal.isGlutenFree) {
           return false;
@@ -50,27 +66,28 @@ class _MealsAppState extends State<MealsApp> {
     });
   }
 
-  @override
-  void initState() {
-//    LocalStorage().writeContent().then((value) => {
-//          print('----InitState reading: ' +
-//              LocalStorage()
-//                  .readContent()
-//                  .then((onValue) => {
-//                        print('----InitState reading: ' + onValue.toString()),
-//                      })
-//                  .toString())
-//        });
-    categories = dummyCategories;
-    LocalStorage().readContent().then((onValue) => {
-          categories = onValue,
-          print(onValue),
-        });
-    super.initState();
+  Widget _buildState(BuildContext context, CategoryState state) {
+    if (state is CategoryLoadingState)
+      return LoadingIndicator();
+    else if (state is CategoryErrorState)
+      return _buildErrorScreen(context, state.error);
+    else if (state is CategoryLoadedState)
+      return _buildContent(context, state.categories);
+    else
+      return Container();
   }
 
   @override
   Widget build(BuildContext context) {
+    return Material(
+      child: BlocBuilder(
+        bloc: _categoryBloc,
+        builder: _buildState,
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context, List<Category> categories) {
     return MaterialApp(
       title: 'DeliMeals',
       theme: ThemeData(
@@ -78,36 +95,50 @@ class _MealsAppState extends State<MealsApp> {
         accentColor: Colors.amber,
         canvasColor: Color.fromRGBO(255, 254, 229, 1),
         fontFamily: 'Raleway',
-        textTheme: ThemeData.light().textTheme.copyWith(
-              body1: TextStyle(
-                color: Color.fromRGBO(20, 51, 51, 1),
-              ),
-              body2: TextStyle(
-                color: Color.fromRGBO(20, 51, 51, 1),
-              ),
-              title: TextStyle(
-                fontSize: 20,
-                fontFamily: 'RobotoCondensed',
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+        textTheme: ThemeData
+            .light()
+            .textTheme
+            .copyWith(
+          body1: TextStyle(
+            color: Color.fromRGBO(20, 51, 51, 1),
+          ),
+          body2: TextStyle(
+            color: Color.fromRGBO(20, 51, 51, 1),
+          ),
+          title: TextStyle(
+            fontSize: 20,
+            fontFamily: 'RobotoCondensed',
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
-//        home: CategoriesScreen(),
       initialRoute: '/',
       routes: {
-        '/': (ctx) => TabsScreen(_favoritedMeals),
+        MealsApp.routeName: (context) => MealsApp(),
+        '/': (ctx) => TabsScreen(_favoritedMeals, categories),
         CategoryMealsScreen.routeName: (context) =>
             CategoryMealsScreen(_availableMeals),
         MealDetailScreen.routeName: (context) => MealDetailScreen(),
         FiltersScreen.routeName: (context) =>
-            FiltersScreen(_filters, _setFilters),
+            FiltersScreen(_filters, _setFilters, categories),
+        CategoriesScreen.routeName: (context) => CategoriesScreen(categories),
       },
       onGenerateRoute: (settings) {
-        print(settings.arguments);
-        return MaterialPageRoute(builder: (context) => CategoriesScreen());
+        return MaterialPageRoute(
+            builder: (context) => CategoriesScreen(categories));
       },
       onUnknownRoute: (settings) {
-        return MaterialPageRoute(builder: (context) => CategoriesScreen());
+        return MaterialPageRoute(
+            builder: (context) => CategoriesScreen(categories));
+      },
+    );
+  }
+
+  Widget _buildErrorScreen(BuildContext context, Exception exception) {
+    return ErrorScreen(
+      exception: exception,
+      onRetry: () {
+        _categoryBloc.dispatch(FetchCategoriesEvent());
       },
     );
   }
