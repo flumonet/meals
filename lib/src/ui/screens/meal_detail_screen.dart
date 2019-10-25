@@ -3,13 +3,20 @@ import 'package:meals/resources/dummy_data.dart';
 
 class MealDetailScreen extends StatelessWidget {
   static const routeName = '/meal-detail';
+  final Function toggleFavorite;
+  final Function isFavorite;
+
+  MealDetailScreen(this.toggleFavorite, this.isFavorite);
 
   Widget buildSectionTitle(BuildContext context, String text) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 5),
       child: Text(
         text,
-        style: Theme.of(context).textTheme.title,
+        style: Theme
+            .of(context)
+            .textTheme
+            .title,
       ),
     );
   }
@@ -24,28 +31,34 @@ class MealDetailScreen extends StatelessWidget {
       margin: EdgeInsets.all(10),
       padding: EdgeInsets.all(10),
       height: 160,
-      width: MediaQuery.of(context).size.width * 0.8,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width * 0.8,
       child: child,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final mealId = ModalRoute.of(context).settings.arguments as String;
+    final mealId = ModalRoute
+        .of(context)
+        .settings
+        .arguments as String;
     final selectedMeal = DUMMY_MEALS.firstWhere((meal) => meal.id == mealId);
     return Scaffold(
       appBar: AppBar(
         title: Text('${selectedMeal.title}'),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.delete,
-            ),
-            padding: EdgeInsets.only(right: 30),
-            onPressed: () {
-              Navigator.of(context).pop(mealId);
-            },
-          ),
+//          IconButton(
+//            icon: Icon(
+//              Icons.delete,
+//            ),
+//            padding: EdgeInsets.only(right: 30),
+//            onPressed: () {
+//              Navigator.of(context).pop(mealId);
+//            },
+//          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -63,13 +76,16 @@ class MealDetailScreen extends StatelessWidget {
             buildContainer(
               context,
               ListView.builder(
-                itemBuilder: (ctx, index) => Card(
-                  color: Theme.of(context).accentColor,
-                  child: Padding(
-                      padding:
+                itemBuilder: (ctx, index) =>
+                    Card(
+                      color: Theme
+                          .of(context)
+                          .accentColor,
+                      child: Padding(
+                          padding:
                           EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                      child: Text(selectedMeal.ingredients[index])),
-                ),
+                          child: Text(selectedMeal.ingredients[index])),
+                    ),
                 itemCount: selectedMeal.ingredients.length,
               ),
             ),
@@ -77,22 +93,29 @@ class MealDetailScreen extends StatelessWidget {
             buildContainer(
               context,
               ListView.builder(
-                itemBuilder: (ctx, index) => Column(
-                  children: <Widget>[
-                    ListTile(
-                      leading: CircleAvatar(
-                        child: Text('# ${(index + 1)}'),
-                      ),
-                      title: Text(selectedMeal.steps[index]),
+                itemBuilder: (ctx, index) =>
+                    Column(
+                      children: <Widget>[
+                        ListTile(
+                          leading: CircleAvatar(
+                            child: Text('# ${(index + 1)}'),
+                          ),
+                          title: Text(selectedMeal.steps[index]),
+                        ),
+                        Divider(),
+                      ],
                     ),
-                    Divider(),
-                  ],
-                ),
                 itemCount: selectedMeal.steps.length,
               ),
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(
+            isFavorite(mealId) ? Icons.star : Icons.star_border,
+        ),
+        onPressed: () => toggleFavorite(mealId),
       ),
     );
   }

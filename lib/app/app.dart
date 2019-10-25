@@ -28,7 +28,7 @@ class _MealsAppState extends State<MealsApp> {
 
   CategoryBloc _categoryBloc;
   List<Meal> _availableMeals = DUMMY_MEALS;
-  List<Meal> _favoritedMeals = [];
+  List<Meal> _favoriteMeals = [];
   List<Category> categories = [];
 
   @override
@@ -64,6 +64,25 @@ class _MealsAppState extends State<MealsApp> {
         return true;
       }).toList();
     });
+  }
+
+  void _toggleFavorite(String mealId) {
+    final existingIndex = _favoriteMeals.indexWhere((meal) =>
+    meal.id == mealId);
+    if (existingIndex >= 0) {
+      setState(() {
+        _favoriteMeals.removeAt(existingIndex);
+      });
+    } else {
+      setState(() {
+        _favoriteMeals.add(
+            DUMMY_MEALS.firstWhere((meal) => meal.id == mealId));
+      });
+    }
+  }
+
+  bool _isMealFavorite(String id) {
+    return _favoriteMeals.any((meal) => meal.id == id);
   }
 
   Widget _buildState(BuildContext context, CategoryState state) {
@@ -115,10 +134,10 @@ class _MealsAppState extends State<MealsApp> {
       initialRoute: '/',
       routes: {
         MealsApp.routeName: (context) => MealsApp(),
-        '/': (ctx) => TabsScreen(_favoritedMeals, categories),
+        '/': (ctx) => TabsScreen(_favoriteMeals, categories),
         CategoryMealsScreen.routeName: (context) =>
             CategoryMealsScreen(_availableMeals),
-        MealDetailScreen.routeName: (context) => MealDetailScreen(),
+        MealDetailScreen.routeName: (context) => MealDetailScreen(_toggleFavorite, _isMealFavorite),
         FiltersScreen.routeName: (context) =>
             FiltersScreen(_filters, _setFilters, categories),
         CategoriesScreen.routeName: (context) => CategoriesScreen(categories),
