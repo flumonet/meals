@@ -41,7 +41,7 @@ class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
     });
   }
 
-  void selectCategory(BuildContext context) {
+  void deleteCategory(BuildContext context) {
     Navigator.of(context).pushNamed(
       '/',
       arguments: categoryId,
@@ -59,7 +59,7 @@ class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
               Icons.delete,
             ),
             padding: EdgeInsets.only(right: 30),
-            onPressed: () => selectCategory(context),
+            onPressed: () => deleteCategory(context),
           ),
         ],
       ),
@@ -72,7 +72,6 @@ class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
             duration: displayedMeals[index].duration,
             complexity: displayedMeals[index].complexity,
             affordability: displayedMeals[index].affordability,
-            removeItem: _removeMeal,
           );
         },
         itemCount: displayedMeals.length,
