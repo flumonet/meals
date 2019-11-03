@@ -1,21 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:meals/src/services/models/cat.dart';
 import 'package:meals/src/services/models/meal.dart';
 import 'package:meals/src/services/models/category.dart';
-
-List<Cat> dummyCat = [
-  Cat(
-    id: 'c1',
-    title: 'Italian',
-    color: Colors.purple.value,
-  ),
-  Cat(
-    id: 'c2',
-    title: 'Quick & Easy',
-    color: Colors.red.value,
-  ),
- ];
-
 
 List<Category> dummyCategories = [
   Category(
